@@ -804,26 +804,14 @@ pub fn is_modifier(evt: &KeyEvent) -> bool {
     }
 }
 
+/// 内部专用版本禁用官方更新检查。
 pub fn check_software_update() {
-    std::thread::spawn(move || allow_err!(check_software_update_()));
 }
 
 #[tokio::main(flavor = "current_thread")]
-async fn check_software_update_() -> hbb_common::ResultType<()> {
-    let url = "https://github.com/rustdesk/rustdesk/releases/latest";
-    let latest_release_response = create_http_client_async().get(url).send().await?;
-    let latest_release_version = latest_release_response
-        .url()
-        .path()
-        .rsplit('/')
-        .next()
-        .unwrap_or_default();
-
-    let response_url = latest_release_response.url().to_string();
-
-    if get_version_number(&latest_release_version) > get_version_number(crate::VERSION) {
-        *SOFTWARE_UPDATE_URL.lock().unwrap() = response_url;
-    }
+async fn check_software_update_()
+    -> hbb_common::ResultType<()>
+{
     Ok(())
 }
 
@@ -855,46 +843,16 @@ pub fn is_setup(name: &str) -> bool {
     name.to_lowercase().ends_with("install.exe")
 }
 
-pub fn get_custom_rendezvous_server(custom: String) -> String {
-    #[cfg(windows)]
-    if let Ok(lic) = crate::platform::windows::get_license_from_exe_name() {
-        if !lic.host.is_empty() {
-            return lic.host.clone();
-        }
-    }
-    if !custom.is_empty() {
-        return custom;
-    }
-    if !config::PROD_RENDEZVOUS_SERVER.read().unwrap().is_empty() {
-        return config::PROD_RENDEZVOUS_SERVER.read().unwrap().clone();
-    }
-    "".to_owned()
+pub fn get_custom_rendezvous_server(_custom: String) -> String {
+    "43.136.123.67".to_owned()
 }
 
-pub fn get_api_server(api: String, custom: String) -> String {
-    #[cfg(windows)]
-    if let Ok(lic) = crate::platform::windows::get_license_from_exe_name() {
-        if !lic.api.is_empty() {
-            return lic.api.clone();
-        }
-    }
-    if !api.is_empty() {
-        return api.to_owned();
-    }
-    let api = option_env!("API_SERVER").unwrap_or_default();
-    if !api.is_empty() {
-        return api.into();
-    }
-    let s0 = get_custom_rendezvous_server(custom);
-    if !s0.is_empty() {
-        let s = crate::increase_port(&s0, -2);
-        if s == s0 {
-            return format!("http://{}:{}", s, config::RENDEZVOUS_PORT - 2);
-        } else {
-            return format!("http://{}", s);
-        }
-    }
-    "http://remote.iot.lvyakeji.cn:21114".to_owned()
+
+pub fn get_api_server(
+    _api: String,
+    _custom: String,
+) -> String {
+    "http://43.136.123.67:21114".to_owned()
 }
 
 pub fn get_audit_server(api: String, custom: String, typ: String) -> String {

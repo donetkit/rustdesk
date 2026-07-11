@@ -624,13 +624,6 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             ],
           ),
         SettingsSection(title: Text(translate("Settings")), tiles: [
-          if (!disabledSettings && !_hideNetwork && !_hideServer)
-            SettingsTile(
-                title: Text(translate('ID/Relay Server')),
-                leading: Icon(Icons.cloud),
-                onPressed: (context) {
-                  showServerSettings(gFFI.dialogManager);
-                }),
           if (!isIOS && !_hideNetwork && !_hideProxy)
             SettingsTile(
                 title: Text(translate('Socks5/Http(s) Proxy')),
@@ -737,10 +730,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 title: Text(translate("Version: ") + version),
                 value: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('rustdesk.com',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                      )),
+                  child: Text('Desktop'),
                 ),
                 leading: Icon(Icons.info)),
             SettingsTile(
@@ -759,12 +749,6 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                     child: Text(_fingerprint),
                   ),
                   leading: Icon(Icons.fingerprint)),
-            SettingsTile(
-              title: Text(translate("Privacy Statement")),
-              onPressed: (context) =>
-                  launchUrlString('https://rustdesk.com/privacy.html'),
-              leading: Icon(Icons.privacy_tip),
-            )
           ],
         ),
       ],
@@ -799,11 +783,6 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       ],
     );
   }
-}
-
-void showServerSettings(OverlayDialogManager dialogManager) async {
-  Map<String, dynamic> options = jsonDecode(await bind.mainGetOptions());
-  showServerSettingsWithValue(ServerConfig.fromOptions(options), dialogManager);
 }
 
 void showLanguageSettings(OverlayDialogManager dialogManager) async {
@@ -873,29 +852,24 @@ void showThemeSettings(OverlayDialogManager dialogManager) async {
 }
 
 void showAbout(OverlayDialogManager dialogManager) {
-  dialogManager.show((setState, close, context) {
-    return CustomAlertDialog(
-      title: Text(translate('About RustDesk')),
-      content: Wrap(direction: Axis.vertical, spacing: 12, children: [
-        Text('Version: $version'),
-        InkWell(
-            onTap: () async {
-              const url = 'https://rustdesk.com/';
-              if (await canLaunchUrl(Uri.parse(url))) {
-                await launchUrl(Uri.parse(url));
-              }
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('rustdesk.com',
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                  )),
-            )),
-      ]),
-      actions: [],
-    );
-  }, clickMaskDismiss: true, backDismiss: true);
+  dialogManager.show(
+    (setState, close, context) {
+      return CustomAlertDialog(
+        title: const Text('Desktop'),
+        content: const Wrap(
+          direction: Axis.vertical,
+          spacing: 12,
+          children: [
+            Text('Internal Use Only'),
+            Text('Private Server'),
+          ],
+        ),
+        actions: [],
+      );
+    },
+    backDismiss: true,
+    clickMaskDismiss: true,
+  );
 }
 
 class ScanButton extends StatelessWidget {

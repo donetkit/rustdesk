@@ -115,7 +115,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
             onTap: () async {
               final url = 'https://rustdesk.com/download';
               if (await canLaunchUrl(Uri.parse(url))) {
-                await launchUrl(Uri.parse(url));
+
               }
             },
             child: Container(
@@ -403,7 +403,7 @@ class _WebMenuState extends State<WebMenu> {
         },
         onSelected: (value) {
           if (value == 'server') {
-            showServerSettings(gFFI.dialogManager);
+
           }
           if (value == 'about') {
             showAbout(gFFI.dialogManager);

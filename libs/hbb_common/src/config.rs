@@ -43,7 +43,9 @@ const ENCRYPT_MAX_LEN: usize = 128;
 
 #[cfg(target_os = "macos")]
 lazy_static::lazy_static! {
-    pub static ref ORG: RwLock<String> = RwLock::new("com.carriez".to_owned());
+    pub static ref HELPER_URL:
+        HashMap<&'static str, &'static str> =
+        HashMap::new();
 }
 
 type Size = (i32, i32, i32, i32);
@@ -59,6 +61,7 @@ lazy_static::lazy_static! {
         Some(key) if !key.is_empty() => key,
         _ => "",
     }.to_owned());
+    pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new(String::new());
     pub static ref EXE_RENDEZVOUS_SERVER: RwLock<String> = Default::default();
     pub static ref APP_NAME: RwLock<String> = RwLock::new("RustDesk".to_owned());
     static ref KEY_PAIR: Mutex<Option<KeyPair>> = Default::default();
@@ -83,30 +86,19 @@ lazy_static::lazy_static! {
     pub static ref APP_HOME_DIR: RwLock<String> = Default::default();
 }
 
-pub const LINK_DOCS_HOME: &str = "https://rustdesk.com/docs/en/";
-pub const LINK_DOCS_X11_REQUIRED: &str = "https://rustdesk.com/docs/en/manual/linux/#x11-required";
-pub const LINK_HEADLESS_LINUX_SUPPORT: &str =
-    "https://github.com/rustdesk/rustdesk/wiki/Headless-Linux-Support";
-lazy_static::lazy_static! {
-    pub static ref HELPER_URL: HashMap<&'static str, &'static str> = HashMap::from([
-        ("rustdesk docs home", LINK_DOCS_HOME),
-        ("rustdesk docs x11-required", LINK_DOCS_X11_REQUIRED),
-        ("rustdesk x11 headless", LINK_HEADLESS_LINUX_SUPPORT),
-        ]);
-}
+pub const LINK_DOCS_HOME: &str = "";
+pub const LINK_DOCS_X11_REQUIRED: &str = "";
+pub const LINK_HEADLESS_LINUX_SUPPORT: &str = "";
 
 const CHARS: &[char] = &[
     '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-pub const RENDEZVOUS_SERVERS: &[&str] = &["remote.iot.lvyakeji.cn"];
-pub const PUBLIC_RS_PUB_KEY: &str = "2ZQxXM0BQjBatDz8iN5FB2Pkg3fl+rvZWGKL9rYNesg=";
+pub const RENDEZVOUS_SERVERS: &[&str] = &["43.136.123.67"];
+pub const PUBLIC_RS_PUB_KEY: &str = "h553oze69B2UeCEK5RUNnWVILDZfw8GQ2QO4a8Wsw04=";
 
-pub const RS_PUB_KEY: &str = match option_env!("RS_PUB_KEY") {
-    Some(key) if !key.is_empty() => key,
-    _ => PUBLIC_RS_PUB_KEY,
-};
+pub const RS_PUB_KEY: &str = PUBLIC_RS_PUB_KEY;
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
 pub const RELAY_PORT: i32 = 21117;
@@ -717,54 +709,20 @@ impl Config {
     }
 
     pub fn get_rendezvous_server() -> String {
-        let mut rendezvous_server = EXE_RENDEZVOUS_SERVER.read().unwrap().clone();
-        if rendezvous_server.is_empty() {
-            rendezvous_server = Self::get_option("custom-rendezvous-server");
-        }
-        if rendezvous_server.is_empty() {
-            rendezvous_server = PROD_RENDEZVOUS_SERVER.read().unwrap().clone();
-        }
-        if rendezvous_server.is_empty() {
-            rendezvous_server = CONFIG2.read().unwrap().rendezvous_server.clone();
-        }
-        if rendezvous_server.is_empty() {
-            rendezvous_server = Self::get_rendezvous_servers()
-                .drain(..)
-                .next()
-                .unwrap_or_default();
-        }
-        if !rendezvous_server.contains(':') {
-            rendezvous_server = format!("{rendezvous_server}:{RENDEZVOUS_PORT}");
-        }
-        rendezvous_server
+        format!(
+            "{}:{}",
+            RENDEZVOUS_SERVERS[0],
+            RENDEZVOUS_PORT
+        )
     }
 
     pub fn get_rendezvous_servers() -> Vec<String> {
-        let s = EXE_RENDEZVOUS_SERVER.read().unwrap().clone();
-        if !s.is_empty() {
-            return vec![s];
-        }
-        let s = Self::get_option("custom-rendezvous-server");
-        if !s.is_empty() {
-            return vec![s];
-        }
-        let s = PROD_RENDEZVOUS_SERVER.read().unwrap().clone();
-        if !s.is_empty() {
-            return vec![s];
-        }
-        let serial_obsolute = CONFIG2.read().unwrap().serial > SERIAL;
-        if serial_obsolute {
-            let ss: Vec<String> = Self::get_option("rendezvous-servers")
-                .split(',')
-                .filter(|x| x.contains('.'))
-                .map(|x| x.to_owned())
-                .collect();
-            if !ss.is_empty() {
-                return ss;
-            }
-        }
-        return RENDEZVOUS_SERVERS.iter().map(|x| x.to_string()).collect();
+        RENDEZVOUS_SERVERS
+            .iter()
+            .map(|server| (*server).to_owned())
+            .collect()
     }
+
 
     pub fn reset_online() {
         *ONLINE.lock().unwrap() = Default::default();
