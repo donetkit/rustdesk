@@ -971,7 +971,7 @@ jobs:
           key: ${{ matrix.job.target }}
 
       - name: fix android for flutter 3.13
-        if: $${{ env.ANDROID_FLUTTER_VERSION == '3.13.9' }}
+        if: ${{ env.ANDROID_FLUTTER_VERSION == '3.13.9' }}
         run: |
           cd flutter
           sed -i 's/uni_links_desktop/#uni_links_desktop/g' pubspec.yaml
@@ -1208,7 +1208,7 @@ jobs:
           path: ./flutter/android/app/src/main/jniLibs/x86
 
       - name: fix android for flutter 3.13
-        if: $${{ env.ANDROID_FLUTTER_VERSION == '3.13.9' }}
+        if: ${{ env.ANDROID_FLUTTER_VERSION == '3.13.9' }}
         run: |
           cd flutter
           sed -i 's/uni_links_desktop/#uni_links_desktop/g' pubspec.yaml
