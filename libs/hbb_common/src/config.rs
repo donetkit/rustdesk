@@ -45,9 +45,8 @@ const ENCRYPT_MAX_LEN: usize = 128;
 
 #[cfg(target_os = "macos")]
 lazy_static::lazy_static! {
-    pub static ref HELPER_URL:
-        HashMap<&'static str, &'static str> =
-        HashMap::new();
+    pub static ref ORG: RwLock<String> =
+        RwLock::new("com.carriez".to_owned());
 }
 
 type Size = (i32, i32, i32, i32);
@@ -91,6 +90,12 @@ lazy_static::lazy_static! {
 pub const LINK_DOCS_HOME: &str = "";
 pub const LINK_DOCS_X11_REQUIRED: &str = "";
 pub const LINK_HEADLESS_LINUX_SUPPORT: &str = "";
+
+lazy_static::lazy_static! {
+    pub static ref HELPER_URL:
+        HashMap<&'static str, &'static str> =
+        HashMap::new();
+}
 
 const CHARS: &[char] = &[
     '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',

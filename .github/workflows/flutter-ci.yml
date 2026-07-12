@@ -1,16 +1,21 @@
-﻿name: Full Flutter CI
+name: RustDesk Internal CI
 
 on:
   workflow_dispatch:
+    inputs:
+      build_all_platforms:
+        description: "Also build macOS, iOS, Android and Linux"
+        required: false
+        type: boolean
+        default: false
   pull_request:
     paths-ignore:
-    - "docs/**"
-    - "README.md"
+      - "docs/**"
+      - "README.md"
   push:
     branches:
       - master
     paths-ignore:
-      - ".github/**"
       - "docs/**"
       - "README.md"
       - "res/**"
@@ -20,6 +25,7 @@ on:
 jobs:
   run-ci:
     uses: ./.github/workflows/flutter-build.yml
+    secrets: inherit
     with:
       upload-artifact: true
-
+      build_all_platforms: ${{ github.event_name == 'workflow_dispatch' && inputs.build_all_platforms || false }}

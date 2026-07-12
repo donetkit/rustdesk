@@ -1,4 +1,4 @@
-﻿name: Flutter Nightly Build
+name: Flutter Nightly Build
 
 on:
   schedule:
@@ -12,5 +12,6 @@ jobs:
     secrets: inherit
     with:
       upload-artifact: true
+      build_all_platforms: false
       upload-tag: "nightly"
 

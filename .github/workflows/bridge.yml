@@ -1,4 +1,4 @@
-﻿# This yaml shares the build bridge steps with ci and nightly.
+# This yaml shares the build bridge steps with ci and nightly.
 name: Build flutter-rust-bridge
 # 2023-11-23 18:00:00+00:00
 
@@ -24,7 +24,7 @@ jobs:
             }
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install prerequisites
         run: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: Cache Bridge
         id: cache-bridge
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: /tmp/flutter_rust_bridge
           key: vcpkg-${{ matrix.job.arch }}
@@ -77,8 +77,9 @@ jobs:
           pushd flutter && flutter pub get && popd
 
       - name: Run flutter rust bridge
+        shell: bash
         run: |
-          ~/.cargo/bin/flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart
+          flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master

@@ -1,4 +1,4 @@
-﻿name: Fdroid version file generation
+name: Fdroid version file generation
 
 on:
   workflow_dispatch:

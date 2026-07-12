@@ -1,4 +1,4 @@
-﻿name: Flutter Tag Build
+name: Flutter Tag Build
 
 on:
   workflow_dispatch:
@@ -15,4 +15,5 @@ jobs:
     secrets: inherit
     with:
       upload-artifact: true
+      build_all_platforms: false
       upload-tag: ${{ github.ref_name }}
