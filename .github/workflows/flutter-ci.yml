@@ -1,17 +1,11 @@
-name: RustDesk Internal CI
+name: RustDesk Windows x64 CI
 
 on:
   workflow_dispatch:
-    inputs:
-      build_all_platforms:
-        description: "Also build macOS, iOS, Android and Linux"
-        required: false
-        type: boolean
-        default: false
   pull_request:
     paths-ignore:
-      - "docs/**"
-      - "README.md"
+    - "docs/**"
+    - "README.md"
   push:
     branches:
       - master
@@ -25,7 +19,9 @@ on:
 jobs:
   run-ci:
     uses: ./.github/workflows/flutter-build.yml
-    secrets: inherit
     with:
       upload-artifact: true
-      build_all_platforms: ${{ github.event_name == 'workflow_dispatch' && inputs.build_all_platforms || false }}
+      windows-x64-only: true
+      build-windows-x86: false
+    secrets: inherit
+

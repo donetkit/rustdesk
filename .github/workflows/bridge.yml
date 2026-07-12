@@ -77,12 +77,11 @@ jobs:
           pushd flutter && flutter pub get && popd
 
       - name: Run flutter rust bridge
-        shell: bash
         run: |
-          flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart
+          ~/.cargo/bin/flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: bridge-artifact
           path: |
